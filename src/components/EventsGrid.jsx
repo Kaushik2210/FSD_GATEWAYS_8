@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { events } from "../data/events";
+import { useEvents } from "../hooks/useEvents";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
+import TextPressure from "./reactbits/TextPressure";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,6 +12,7 @@ export default function EventsGrid() {
   const gridRef = useRef(null);
   const headingRef = useRef(null);
   const [activeEvent, setActiveEvent] = useState(null);
+  const events = useEvents();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -51,9 +53,9 @@ export default function EventsGrid() {
         <p className="mb-3 font-display text-xs tracking-[0.4em] text-purple text-glow-purple uppercase">
           Choose Your World
         </p>
-        <h2 className="font-display text-4xl font-bold text-white uppercase md:text-5xl">
-          Events Across Every Biome
-        </h2>
+        <div className="flex justify-center px-2">
+          <TextPressure text="EVENTS ACROSS EVERY BIOME" fontSize="clamp(1.6rem, 5.2vw, 3rem)" glowColor="#a855ff" />
+        </div>
         <p className="mt-4 text-white/60">
           Each block below is a living portal — click one to step inside.
         </p>

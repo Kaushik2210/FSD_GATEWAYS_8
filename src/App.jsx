@@ -7,10 +7,21 @@ import Navbar from "./components/Navbar";
 import WeatherHud from "./components/WeatherHud";
 import Hero from "./components/Hero";
 import EventsGrid from "./components/EventsGrid";
+import MemoriesGallery from "./components/MemoriesGallery";
+import AboutSection from "./components/AboutSection";
 import Footer from "./components/Footer";
+import AdminPage from "./components/AdminPage";
+import { useSmoothScroll } from "./hooks/useSmoothScroll";
+
+const isAdminRoute = window.location.pathname === "/admin";
 
 export default function App() {
   const [introDone, setIntroDone] = useState(false);
+  useSmoothScroll(introDone && !isAdminRoute);
+
+  if (isAdminRoute) {
+    return <AdminPage />;
+  }
 
   return (
     <>
@@ -29,6 +40,8 @@ export default function App() {
       >
         <Hero />
         <EventsGrid />
+        <MemoriesGallery />
+        <AboutSection />
         <Footer />
       </main>
     </>

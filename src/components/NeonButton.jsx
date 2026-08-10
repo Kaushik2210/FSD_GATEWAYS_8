@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 
-export default function NeonButton({ children, variant = "primary", onClick, href, type = "button" }) {
+export default function NeonButton({ children, variant = "primary", onClick, href, type = "button", disabled = false }) {
   const ref = useRef(null);
   const quickX = useRef(null);
   const quickY = useRef(null);
@@ -72,20 +72,28 @@ export default function NeonButton({ children, variant = "primary", onClick, hre
       ? "bg-gradient-to-r from-cyan to-purple text-black shadow-[0_0_25px_rgba(56,242,255,0.45)] hover:shadow-[0_0_45px_rgba(168,85,255,0.65)] transition-shadow duration-300"
       : "glass text-white hover:shadow-[0_0_30px_rgba(168,85,255,0.35)] transition-shadow duration-300";
 
-  const Tag = href ? "a" : "button";
+  const disabledStyle = disabled ? "cursor-not-allowed opacity-40 grayscale" : "";
+
+  const Tag = href && !disabled ? "a" : "button";
 
   return (
     <Tag
-      href={href}
-      type={href ? undefined : type}
+      href={disabled ? undefined : href}
+      type={Tag === "button" ? type : undefined}
+      disabled={Tag === "button" ? disabled : undefined}
+      aria-disabled={disabled}
       ref={ref}
       onClick={(e) => {
+        if (disabled) {
+          e.preventDefault();
+          return;
+        }
         ripple(e);
         onClick?.(e);
       }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-      className={`${base} ${style}`}
+      onMouseMove={disabled ? undefined : onMouseMove}
+      onMouseLeave={disabled ? undefined : onMouseLeave}
+      className={`${base} ${style} ${disabledStyle}`}
       data-cursor-hover
     >
       {children}

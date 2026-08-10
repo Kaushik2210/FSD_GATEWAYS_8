@@ -4,6 +4,7 @@ import gsap from "gsap";
 const LINKS = [
   { label: "Home", href: "#hero" },
   { label: "Events", href: "#events" },
+  { label: "Memories", href: "#memories" },
   { label: "About", href: "#about" },
 ];
 

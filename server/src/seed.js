@@ -1,4 +1,8 @@
-export const biomeGlow = {
+import "dotenv/config";
+import { connectDb } from "./config/db.js";
+import Event from "./models/Event.js";
+
+const biomeGlow = {
   cyber: "#38f2ff",
   library: "#ff8a3d",
   nether: "#ff3ec9",
@@ -8,7 +12,8 @@ export const biomeGlow = {
   crystal: "#4fd6ff",
 };
 
-export const events = [
+// Kept in sync with src/data/events.js — the frontend's static fallback.
+const events = [
   {
     id: "hackathon",
     title: "Hackathon",
@@ -154,3 +159,11 @@ export const events = [
     height: "sm",
   },
 ];
+
+await connectDb();
+for (const event of events) {
+  // eslint-disable-next-line no-await-in-loop
+  await Event.findOneAndUpdate({ id: event.id }, event, { upsert: true, new: true });
+}
+console.log(`[seed] upserted ${events.length} events`);
+process.exit(0);

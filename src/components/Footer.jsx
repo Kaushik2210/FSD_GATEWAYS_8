@@ -25,7 +25,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer id="about" ref={ref} className="relative overflow-hidden px-6 py-24 text-center">
+    <footer ref={ref} className="relative overflow-hidden px-6 py-24 text-center">
       <div className="pointer-events-none absolute inset-0">
         {Array.from({ length: 60 }).map((_, i) => (
           <span

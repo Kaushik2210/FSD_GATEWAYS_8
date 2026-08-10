@@ -1,18 +1,33 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { buildBiomeDiorama, animateDiorama } from "../three/voxelBuilder";
 
 export default function BiomeDiorama({ biome, color, hovered }) {
   const mountRef = useRef(null);
   const speedRef = useRef(1);
+  const [nearViewport, setNearViewport] = useState(false);
 
   useEffect(() => {
     speedRef.current = hovered ? 3.2 : 1;
   }, [hovered]);
 
+  // Defer WebGL context creation until the card is about to scroll into
+  // view — with a dozen+ event cards each holding their own renderer,
+  // creating all of them upfront blows past the browser's concurrent
+  // WebGL context limit and older cards go blank.
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setNearViewport(true);
+    }, { rootMargin: "200px" });
+    io.observe(mount);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount || !nearViewport) return;
 
     let width = mount.clientWidth || 300;
     let height = mount.clientHeight || 260;
@@ -84,7 +99,7 @@ export default function BiomeDiorama({ biome, color, hovered }) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [biome, color]);
+  }, [biome, color, nearViewport]);
 
   return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
 }

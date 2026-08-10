@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import BiomeDiorama from "./BiomeDiorama";
 import NeonButton from "./NeonButton";
-import RegisterForm from "./RegisterForm";
+import RegistrationWizard from "./RegistrationWizard";
 
 function burstConfetti(container, color) {
   if (!container) return;
@@ -97,7 +97,7 @@ export default function EventModal({ event, onClose }) {
           <BiomeDiorama biome={event.biome} color={event.glow} hovered />
         </div>
 
-        <div ref={contentRef} className="flex flex-col justify-center p-8">
+        <div ref={contentRef} className="flex max-h-[85vh] flex-col justify-center overflow-y-auto p-8">
           {view === "details" && (
             <>
               <span
@@ -127,7 +127,7 @@ export default function EventModal({ event, onClose }) {
                 ← Back to {event.title}
               </button>
               <h3 className="mb-4 font-display text-2xl font-bold text-white">Claim Your Spot</h3>
-              <RegisterForm event={event} onSuccess={(data) => { setTicket(data); setView("success"); }} />
+              <RegistrationWizard event={event} onSuccess={(data) => { setTicket(data); setView("success"); }} />
             </>
           )}
 
@@ -154,6 +154,10 @@ export default function EventModal({ event, onClose }) {
                   {ticket.ticket}
                 </p>
               </div>
+
+              <p className="mt-3 text-xs text-white/40">
+                Payment ref <span className="text-white/70">{ticket.txnId}</span> · {ticket.college} · {ticket.course}
+              </p>
 
               <div className="mt-6">
                 <NeonButton variant="ghost" onClick={close}>
