@@ -47,7 +47,9 @@ export default function Counter({
       {digits.map((_, i) => (
         <span key={i} className="relative overflow-hidden" style={{ width: fontSize * 0.62, height: digitHeight }}>
           <span
-            ref={(el) => (columnRefs.current[i] = el)}
+            ref={(el) => {
+              columnRefs.current[i] = el;
+            }}
             className="absolute inset-x-0 top-0 flex flex-col items-center"
             style={{ transform: `translateY(${-(digits[i] + 10) * digitHeight}px)` }}
           >

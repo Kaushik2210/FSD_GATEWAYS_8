@@ -1,10 +1,20 @@
 import { useRef } from "react";
+import type { ReactNode, MouseEvent, ElementType } from "react";
 import gsap from "gsap";
 
-export default function NeonButton({ children, variant = "primary", onClick, href, type = "button", disabled = false }) {
-  const ref = useRef(null);
-  const quickX = useRef(null);
-  const quickY = useRef(null);
+type NeonButtonProps = {
+  children: ReactNode;
+  variant?: "primary" | "secondary" | "ghost";
+  onClick?: (e: MouseEvent) => void;
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+};
+
+export default function NeonButton({ children, variant = "primary", onClick, href, type = "button", disabled = false }: NeonButtonProps) {
+  const ref = useRef<any>(null);
+  const quickX = useRef<((v: number) => void) | null>(null);
+  const quickY = useRef<((v: number) => void) | null>(null);
 
   const ensureQuick = () => {
     if (!ref.current) return;
@@ -74,7 +84,7 @@ export default function NeonButton({ children, variant = "primary", onClick, hre
 
   const disabledStyle = disabled ? "cursor-not-allowed opacity-40 grayscale" : "";
 
-  const Tag = href && !disabled ? "a" : "button";
+  const Tag: ElementType = href && !disabled ? "a" : "button";
 
   return (
     <Tag

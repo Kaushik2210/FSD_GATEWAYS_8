@@ -64,7 +64,9 @@ export default function TrueFocus({
       {words.map((w, i) => (
         <span
           key={`${w}-${i}`}
-          ref={(el) => (wordRefs.current[i] = el)}
+          ref={(el) => {
+            wordRefs.current[i] = el;
+          }}
           className="font-display text-sm tracking-widest text-white uppercase"
         >
           {w}

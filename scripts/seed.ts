@@ -7,9 +7,9 @@ try {
   // .env.local is optional — MONGODB_URI may already be set in the environment.
 }
 
-import { connectDb } from "../src/lib/db.js";
-import Event from "../src/models/Event.js";
-import { events } from "../src/data/events.js";
+import { connectDb } from "../src/lib/db";
+import Event from "../src/models/Event";
+import { events } from "../src/data/events";
 
 await connectDb();
 for (const event of events) {

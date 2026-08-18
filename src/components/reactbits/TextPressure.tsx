@@ -5,6 +5,15 @@ import gsap from "gsap";
 // The original drives real variable-font weight/width axes; without
 // shipping a variable font file, this approximates the same "pressure"
 // feel with per-character scale, letter-squeeze and glow instead.
+type TextPressureProps = {
+  text?: string;
+  fontSize?: number | string;
+  color?: string;
+  glowColor?: string;
+  radius?: number;
+  className?: string;
+};
+
 export default function TextPressure({
   text = "Text",
   fontSize = 48,
@@ -12,11 +21,11 @@ export default function TextPressure({
   glowColor = "#38f2ff",
   radius = 140,
   className = "",
-}) {
-  const containerRef = useRef(null);
-  const charRefs = useRef([]);
-  const rectsRef = useRef([]);
-  const quickRefs = useRef([]);
+}: TextPressureProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const rectsRef = useRef<(DOMRect | null)[]>([]);
+  const quickRefs = useRef<({ scaleX: (v: number) => void; scaleY: (v: number) => void; y: (v: number) => void } | null)[]>([]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -87,7 +96,9 @@ export default function TextPressure({
       {text.split("").map((ch, i) => (
         <span
           key={i}
-          ref={(el) => (charRefs.current[i] = el)}
+          ref={(el) => {
+            charRefs.current[i] = el;
+          }}
           className="inline-block will-change-transform"
           style={{ display: "inline-block" }}
         >

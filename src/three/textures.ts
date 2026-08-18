@@ -158,7 +158,7 @@ function shade(hex, amt) {
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
-export function blockMaterials({ top, side, bottom }) {
+export function blockMaterials({ top, side, bottom }: { top?: THREE.Texture; side: THREE.Texture; bottom?: THREE.Texture }) {
   const sideMat = new THREE.MeshStandardMaterial({ map: side, roughness: 0.9 });
   const topMat = new THREE.MeshStandardMaterial({ map: top || side, roughness: 0.9 });
   const bottomMat = new THREE.MeshStandardMaterial({ map: bottom || side, roughness: 0.9 });
