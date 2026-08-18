@@ -113,7 +113,10 @@ export default function DriftWall({
                 className="flex flex-col"
                 style={{
                   gap,
-                  animation: `drift-scroll ${duration}s linear infinite`,
+                  animationName: "drift-scroll",
+                  animationDuration: `${duration}s`,
+                  animationTimingFunction: "linear",
+                  animationIterationCount: "infinite",
                   animationDirection: goingUp ? "normal" : "reverse",
                 }}
               >

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DriftWall from "./reactbits/DriftWall";
+import { useDriftWallLayout } from "../hooks/useDriftWallLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,6 +37,7 @@ export default function MemoriesGallery() {
   const headingRef = useRef(null);
   const wallWrapRef = useRef(null);
   const [active, setActive] = useState(null);
+  const driftLayout = useDriftWallLayout();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -94,10 +96,10 @@ export default function MemoriesGallery() {
       <div ref={wallWrapRef} className="mx-auto max-w-6xl">
         <DriftWall
           items={ITEMS}
-          columns={5}
-          tileWidth={190}
-          tileHeight={130}
-          gap={16}
+          columns={driftLayout.columns}
+          tileWidth={driftLayout.tileWidth}
+          tileHeight={driftLayout.tileHeight}
+          gap={driftLayout.gap}
           radius={16}
           onItemClick={setActive}
         />

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { apiGet, apiPost } from "../lib/api";
 import NeonButton from "./NeonButton";

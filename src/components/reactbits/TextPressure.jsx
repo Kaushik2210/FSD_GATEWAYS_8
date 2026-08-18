@@ -26,7 +26,8 @@ export default function TextPressure({
     quickRefs.current = charRefs.current.map((el) =>
       el
         ? {
-            scale: gsap.quickTo(el, "scale", { duration: 0.35, ease: "power3.out" }),
+            scaleX: gsap.quickTo(el, "scaleX", { duration: 0.35, ease: "power3.out" }),
+            scaleY: gsap.quickTo(el, "scaleY", { duration: 0.35, ease: "power3.out" }),
             y: gsap.quickTo(el, "y", { duration: 0.35, ease: "power3.out" }),
           }
         : null
@@ -46,7 +47,9 @@ export default function TextPressure({
         const pressure = Math.max(0, 1 - dist / radius);
         const q = quickRefs.current[i];
         if (!q) return;
-        q.scale(1 + pressure * 0.55);
+        const scale = 1 + pressure * 0.55;
+        q.scaleX(scale);
+        q.scaleY(scale);
         q.y(-pressure * 6);
         charRefs.current[i].style.textShadow = pressure > 0.05 ? `0 0 ${18 * pressure}px ${glowColor}` : "none";
       });
@@ -56,7 +59,8 @@ export default function TextPressure({
       charRefs.current.forEach((el, i) => {
         const q = quickRefs.current[i];
         if (!q) return;
-        q.scale(1);
+        q.scaleX(1);
+        q.scaleY(1);
         q.y(0);
         if (el) el.style.textShadow = "none";
       });

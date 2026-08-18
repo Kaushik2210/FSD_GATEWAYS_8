@@ -137,11 +137,12 @@ export function createHeroScene(mount) {
   };
   window.addEventListener("scroll", onScroll);
 
-  const clock = new THREE.Clock();
+  const timer = new THREE.Timer();
   let raf = 0;
   function animate() {
     raf = requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
+    timer.update();
+    const t = timer.getElapsed();
 
     mouse.x += (targetMouse.x - mouse.x) * 0.04;
     mouse.y += (targetMouse.y - mouse.y) * 0.04;

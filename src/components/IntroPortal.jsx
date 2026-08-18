@@ -102,10 +102,11 @@ export default function IntroPortal({ onComplete }) {
     ring.add(portalFill);
 
     let raf = 0;
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      const dt = clock.getDelta();
+      timer.update();
+      const dt = timer.getDelta();
       const posAttr = particleGeo.getAttribute("position");
       for (let i = 0; i < PARTICLES; i++) {
         posAttr.array[i * 3] += velocities[i].x * dt * 60;

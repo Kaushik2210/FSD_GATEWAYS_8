@@ -63,12 +63,13 @@ export default function BiomeDiorama({ biome, color, hovered }) {
     );
     io.observe(mount);
 
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
     let raf = 0;
     const animate = () => {
       raf = requestAnimationFrame(animate);
       if (!visible) return;
-      const t = clock.getElapsedTime();
+      timer.update();
+      const t = timer.getElapsed();
       animateDiorama(diorama, t, speedRef.current);
       renderer.render(scene, camera);
     };

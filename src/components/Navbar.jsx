@@ -44,16 +44,20 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav ref={navRef} className="fixed top-6 left-1/2 z-50 -translate-x-1/2" data-cursor-hover>
+    <nav
+      ref={navRef}
+      className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-fit -translate-x-1/2 sm:top-6"
+      data-cursor-hover
+    >
       <ul
         ref={listRef}
-        className="glass flex items-center gap-1 rounded-full px-2 py-2 shadow-[0_0_30px_rgba(168,85,255,0.15)]"
+        className="glass flex items-center justify-center gap-0.5 overflow-x-auto rounded-full px-1.5 py-1.5 shadow-[0_0_30px_rgba(168,85,255,0.15)] sm:gap-1 sm:px-2 sm:py-2"
       >
         {LINKS.map((link) => (
-          <li key={link.label}>
+          <li key={link.label} className="shrink-0">
             <a
               href={link.href}
-              className="group relative block rounded-full px-4 py-2 font-display text-xs tracking-widest text-white/70 uppercase transition-colors duration-300 hover:text-white"
+              className="group relative block rounded-full px-2.5 py-2 font-display text-[10px] tracking-widest text-white/70 uppercase transition-colors duration-300 hover:text-white sm:px-4 sm:text-xs"
             >
               <span className="relative z-10">{link.label}</span>
               <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan/20 to-purple/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

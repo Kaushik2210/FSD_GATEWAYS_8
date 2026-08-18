@@ -2,30 +2,32 @@
 
 A Minecraft-biome-themed college fest site: a 3D hero portal, 12 events across
 biomes, email-OTP-verified registration with a demo payment step, a memories
-wall, and an admin dashboard — built with React + Three.js + GSAP on the
-front end and Express + MongoDB on the back end, deployed as a single app on
-Vercel.
+wall, and an admin dashboard — built with Next.js (App Router) + Three.js +
+GSAP, with MongoDB accessed directly from Next.js Route Handlers, deployed as
+a single app on Vercel.
 
 **Live:** https://gateways-fest.vercel.app
-**Admin:** https://gateways-fest.vercel.app/admin *(credentials in `server/.env` — see [Access](#access) below)*
+**Admin:** https://gateways-fest.vercel.app/admin *(credentials in `.env.local` — see [Access](#access) below)*
 
 ---
 
 ## Architecture
 
-Frontend and backend ship as **one Vercel deployment**: the React app is
-built as static assets, and the Express API runs as a single Vercel
-serverless function. Both talk to a MongoDB Atlas cluster.
+Frontend and backend ship as **one Next.js app, one Vercel deployment**: the
+`/ssr`-and-`/csr`-style page/API split doesn't apply here since the whole
+experience is client-rendered (Three.js/GSAP/Lenis), but the API lives in the
+same project as Route Handlers under `src/app/api/*` instead of a separate
+Express server. Both talk to a MongoDB Atlas cluster.
 
 ```mermaid
 flowchart TB
     subgraph Browser["🌐 Browser"]
-        UI["React SPA (Vite)<br/>Hero · Events · Memories · About · Admin"]
+        UI["Next.js app (client-rendered)<br/>Hero · Events · Memories · About · Admin"]
     end
 
-    subgraph Vercel["▲ Vercel (single deployment)"]
-        Static["Static assets<br/>dist/ (HTML, JS, CSS)"]
-        Fn["api/index.js<br/>Express app as a serverless function"]
+    subgraph Vercel["▲ Vercel (single Next.js deployment)"]
+        Pages["App Router pages<br/>/ (site) · /admin"]
+        Routes["Route Handlers<br/>src/app/api/*"]
     end
 
     subgraph External["External services"]
@@ -35,27 +37,29 @@ flowchart TB
         Picsum["Lorem Picsum<br/>placeholder photos"]
     end
 
-    UI -- "GET /, /assets/*" --> Static
-    UI -- "GET/POST /api/*" --> Fn
+    UI -- "GET /, /admin" --> Pages
+    UI -- "GET/POST /api/*" --> Routes
     UI -- "map tiles" --> OSM
     UI -- "gallery images" --> Picsum
 
-    Fn -- "mongoose" --> Atlas
-    Fn -- "send OTP email" --> Gmail
+    Routes -- "mongoose" --> Atlas
+    Routes -- "send OTP email" --> Gmail
 
     classDef ext fill:#1a1a2e,stroke:#38f2ff,color:#fff;
     classDef vercel fill:#111,stroke:#a855ff,color:#fff;
     class Atlas,Gmail,OSM,Picsum ext;
-    class Static,Fn vercel;
+    class Pages,Routes vercel;
 ```
 
-### Request routing (`vercel.json`)
+### Routing
 
-| Path | Destination |
+Next.js App Router handles this natively — no `vercel.json` rewrites needed:
+
+| Path | Handled by |
 |---|---|
-| `/api/*` | `api/index.js` (Express serverless function) |
-| everything else (e.g. `/admin`, `/#events`) | `index.html` (client-side routing / SPA fallback) |
-| `/assets/*`, `/favicon.svg` | served directly from `dist/` |
+| `/` | `src/app/page.js` (client-rendered site experience) |
+| `/admin` | `src/app/admin/page.js` (client-rendered admin dashboard) |
+| `/api/*` | Route Handlers under `src/app/api/*` |
 
 ### Registration flow
 
@@ -100,32 +104,35 @@ sequenceDiagram
 
 | Layer | Tech |
 |---|---|
-| Frontend | React 19, Vite, Tailwind CSS, GSAP, Three.js, Lenis, Leaflet |
-| Backend | Express, Mongoose |
+| Frontend | Next.js 16 (App Router), React 19, Tailwind CSS, GSAP, Three.js, Lenis, Leaflet |
+| Backend | Next.js Route Handlers, Mongoose |
 | Database | MongoDB Atlas |
 | Email | Nodemailer (Gmail SMTP) |
-| Hosting | Vercel (static + serverless function) |
+| Hosting | Vercel |
 
 ## Project structure
 
 ```
-├── api/
-│   └── index.js          # Vercel serverless entry — wraps the Express app
-├── server/
-│   └── src/
-│       ├── app.js        # Express app (routes + middleware)
-│       ├── config/db.js  # Mongoose connection
-│       ├── models/       # Event, Registration, Otp
-│       ├── routes/       # events, otp, registrations, admin
-│       └── lib/mailer.js # Nodemailer wrapper
 ├── src/
-│   ├── components/       # React components (Hero, EventsGrid, AboutSection, ...)
-│   │   └── reactbits/    # Counter, TrueFocus, TextPressure, ParticleText, DriftWall
-│   ├── three/            # Three.js scene builders (voxel biomes, hero scene)
-│   ├── hooks/            # useEvents, useSmoothScroll, useLiveWeather
-│   └── lib/               # api.js (fetch client), otp.js
-└── vercel.json            # routing: /api/* → function, everything else → SPA fallback
+│   ├── app/
+│   │   ├── page.js            # "/" — loads the client-rendered site experience
+│   │   ├── admin/page.js      # "/admin" — loads the client-rendered admin dashboard
+│   │   └── api/                # Route Handlers: events, otp, registrations, admin
+│   ├── components/             # SiteExperience, Hero, EventsGrid, AboutSection, ...
+│   │   └── reactbits/          # Counter, TrueFocus, TextPressure, ParticleText, DriftWall
+│   ├── three/                  # Three.js scene builders (voxel biomes, hero scene)
+│   ├── hooks/                  # useEvents, useSmoothScroll, useLiveWeather, useDriftWallLayout
+│   ├── lib/                    # api.js (fetch client), otp.js, db.js (Mongoose connection)
+│   ├── models/                 # Event, Registration, Otp
+│   └── server/mailer.js        # Nodemailer wrapper (route-handler only, never imported by client code)
+└── scripts/seed.js             # seeds MongoDB with the event catalog
 ```
+
+The whole site (`SiteExperience`) and the admin dashboard are loaded via
+`next/dynamic(..., { ssr: false })` — the experience is entirely Three.js /
+GSAP / Lenis / localStorage driven with no server-renderable content, so
+forcing client-only rendering avoids hydration mismatches without losing any
+of Next.js's routing, bundling, or Route Handler benefits.
 
 ## Local development
 
@@ -135,33 +142,23 @@ Requires Node 18+ and a MongoDB connection (local `mongod` or an Atlas cluster).
 # install
 npm install
 
-# copy env templates and fill in real values
-cp .env.example .env.development.local
-cp server/.env.example server/.env
+# copy the env template and fill in real values
+cp .env.local.example .env.local
 
 # seed the database with the 12 events
-cd server && npm run seed && cd ..
+npm run seed
 
-# run backend (localhost:4000) and frontend (localhost:5173) in two terminals
-cd server && npm run dev
+# run the app (frontend + API, one process, one port)
 npm run dev
 ```
 
 ### Environment variables
 
-**Root `.env.development.local`** (dev only — production build uses a relative `/api` path automatically):
-
-| Variable | Purpose |
-|---|---|
-| `VITE_API_URL` | Backend URL for local dev, e.g. `http://localhost:4000/api` |
-
-**`server/.env`**:
+Set in `.env.local` (auto-loaded by Next.js for both `next dev` and `next build`):
 
 | Variable | Purpose |
 |---|---|
 | `MONGODB_URI` | MongoDB connection string (local or Atlas) |
-| `PORT` | Local Express port (dev only) |
-| `CLIENT_ORIGIN` | Allowed CORS origin (dev only) |
 | `ADMIN_KEY` | Internal key `/api/registrations` requires (issued after admin login) |
 | `ADMIN_USER` / `ADMIN_PASS` | Login credentials for `/admin` |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | Gmail SMTP for real OTP email delivery. Leave unset to fall back to demo mode (code shown in the UI instead of emailed). |
@@ -171,10 +168,10 @@ Same variables are set in the Vercel project (Production environment) for the li
 ## Deployment
 
 Deployed via the Vercel CLI (`vercel deploy --prod`), linked to the
-`gateways-fest` project. The frontend builds via `vite build`; the backend
-runs as `api/index.js`, a single serverless function wrapping the Express
-app with a cached Mongoose connection (reused across warm invocations
-instead of reconnecting per request).
+`gateways-fest` project. Vercel detects the Next.js app automatically — no
+`vercel.json` needed. Route Handlers run as serverless functions with a
+cached Mongoose connection (reused across warm invocations instead of
+reconnecting per request).
 
 To redeploy after changes:
 
@@ -187,10 +184,10 @@ vercel deploy --prod
 | What | Where |
 |---|---|
 | Live site | https://gateways-fest.vercel.app |
-| Admin dashboard | https://gateways-fest.vercel.app/admin — sign in with `ADMIN_USER` / `ADMIN_PASS` (see `server/.env`, not committed) |
-| MongoDB Atlas | Cluster `GatewaysFSD8` — connection string in `server/.env` as `MONGODB_URI` |
+| Admin dashboard | https://gateways-fest.vercel.app/admin — sign in with `ADMIN_USER` / `ADMIN_PASS` (see `.env.local`, not committed) |
+| MongoDB Atlas | Cluster `GatewaysFSD8` — connection string in `.env.local` as `MONGODB_URI` |
 | Email sender | Gmail account in `SMTP_USER`, authenticated via an app password in `SMTP_PASS` |
 
 Credentials are intentionally **not** included in this file since it's
-version-controlled — they live only in the gitignored `.env` files locally
-and as encrypted environment variables in the Vercel project.
+version-controlled — they live only in the gitignored `.env.local` file
+locally and as encrypted environment variables in the Vercel project.

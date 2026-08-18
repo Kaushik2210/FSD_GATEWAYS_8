@@ -213,13 +213,14 @@ export function createAmbientScene(mount) {
   };
   document.addEventListener("visibilitychange", onVisibility);
 
-  const clock = new THREE.Clock();
+  const timer = new THREE.Timer();
   let raf = 0;
   function animate() {
     raf = requestAnimationFrame(animate);
     if (paused) return;
-    const t = clock.getElapsedTime();
-    const dt = Math.min(clock.getDelta(), 0.05);
+    timer.update();
+    const t = timer.getElapsed();
+    const dt = Math.min(timer.getDelta(), 0.05);
 
     mouse.x += (targetMouse.x - mouse.x) * 0.02;
     mouse.y += (targetMouse.y - mouse.y) * 0.02;

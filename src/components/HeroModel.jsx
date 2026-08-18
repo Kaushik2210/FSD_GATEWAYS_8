@@ -162,13 +162,14 @@ export default function HeroModel() {
     window.addEventListener("mousemove", onMouseMove);
 
     let raf = 0;
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
     let currentTiltX = 0;
     let currentTiltY = 0;
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      const dt = Math.min(clock.getDelta(), 0.05);
+      timer.update();
+      const t = timer.getElapsed();
+      const dt = Math.min(timer.getDelta(), 0.05);
 
       if (!dragging) {
         velocity *= 0.94;

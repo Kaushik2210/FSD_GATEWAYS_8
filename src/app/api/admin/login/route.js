@@ -1,7 +1,5 @@
-import { Router } from "express";
+import { NextResponse } from "next/server";
 import crypto from "crypto";
-
-const router = Router();
 
 function safeEqual(a, b) {
   const bufA = Buffer.from(String(a));
@@ -13,21 +11,20 @@ function safeEqual(a, b) {
 // Exchanges a username/password for the admin key used by GET
 // /api/registrations, so the frontend login form never needs the raw key
 // hardcoded or pasted in by hand.
-router.post("/login", (req, res) => {
-  const { username, password } = req.body || {};
+export async function POST(request) {
+  const body = await request.json().catch(() => null);
+  const { username, password } = body || {};
   const { ADMIN_USER, ADMIN_PASS, ADMIN_KEY } = process.env;
 
   if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_KEY) {
-    return res.status(503).json({ error: "Admin login isn't configured on this deployment" });
+    return NextResponse.json({ error: "Admin login isn't configured on this deployment" }, { status: 503 });
   }
   if (!username || !password) {
-    return res.status(400).json({ error: "username and password are required" });
+    return NextResponse.json({ error: "username and password are required" }, { status: 400 });
   }
   if (!safeEqual(username, ADMIN_USER) || !safeEqual(password, ADMIN_PASS)) {
-    return res.status(401).json({ error: "Invalid username or password" });
+    return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
   }
 
-  res.json({ adminKey: ADMIN_KEY });
-});
-
-export default router;
+  return NextResponse.json({ adminKey: ADMIN_KEY });
+}

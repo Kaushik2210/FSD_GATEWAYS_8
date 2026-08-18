@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #050505;
+  --color-void-2: #08080a;
+  --color-void-3: #111111;
+
+  --color-cyan: #38f2ff;
+  --color-purple: #a855ff;
+  --color-magenta: #ff3ec9;
+  --color-emerald: #2bffa8;
+  --color-diamond: #4fd6ff;
+  --color-lava: #ff8a3d;
+  --color-end: #b96bff;
+  --color-grass: #6bff6b;
+
+  --font-display: var(--font-chakra-petch), var(--font-space-grotesk), sans-serif;
+  --font-body: var(--font-space-grotesk), "Inter", sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-void);
+  color: #f4f3f8;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+@media (max-width: 900px), (hover: none) {
+  html,
+  body {
+    cursor: auto;
+  }
+}
+
+#root {
+  min-height: 100svh;
+  position: relative;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-purple) 40%, transparent);
+  color: #fff;
+}
+
+/* thin neon-tinted scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-void-2);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-purple), var(--color-cyan));
+  border-radius: 999px;
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 70%, transparent), 0 0 32px color-mix(in srgb, var(--color-cyan) 40%, transparent);
+}
+.text-glow-purple {
+  text-shadow: 0 0 12px color-mix(in srgb, var(--color-purple) 70%, transparent), 0 0 32px color-mix(in srgb, var(--color-purple) 40%, transparent);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.noise-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.scanline-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  opacity: 0.05;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.6) 0px,
+    rgba(255, 255, 255, 0.6) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* faint drifting Minecraft world-grid, gives the void some texture and motion */
+.grid-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.05;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-cyan) 60%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-purple) 60%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: grid-drift 40s linear infinite;
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 48px 96px, -48px 96px;
+  }
+}
+
+/* React-Bits-style "Aurora" — soft drifting color blobs behind the hero */
+.aurora-layer {
+  pointer-events: none;
+  position: absolute;
+  inset: -10% -10% auto -10%;
+  height: 70%;
+  z-index: 0;
+  filter: blur(60px);
+  opacity: 0.55;
+  background:
+    radial-gradient(40% 55% at 20% 20%, color-mix(in srgb, var(--color-purple) 55%, transparent) 0%, transparent 70%),
+    radial-gradient(35% 50% at 75% 15%, color-mix(in srgb, var(--color-cyan) 50%, transparent) 0%, transparent 70%),
+    radial-gradient(30% 45% at 50% 60%, color-mix(in srgb, var(--color-magenta) 40%, transparent) 0%, transparent 70%);
+  animation: aurora-drift 16s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(-3%, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 4%, 0) rotate(4deg) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-2%, -3%, 0) rotate(-3deg) scale(1.03);
+  }
+}
+
+/* React-Bits-style "Shiny Text" — a light sweep across the hero title,
+   layered on top of its base gradient so both clip to the same text. */
+.shiny-sweep {
+  background-image:
+    linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.95) 50%, transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #c9c4ff 55%, #38f2ff 100%);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 150% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shiny-sweep 4.5s ease-in-out infinite;
+  animation-delay: 2.6s;
+}
+
+@keyframes shiny-sweep {
+  0% {
+    background-position: 150% 0, 0 0;
+  }
+  40%,
+  100% {
+    background-position: -50% 0, 0 0;
+  }
+}
+
+/* React-Bits-style "Drift Wall" — looping vertical drift per column */
+@keyframes drift-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

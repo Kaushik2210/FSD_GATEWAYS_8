@@ -84,10 +84,11 @@ export default function ScrollDragon() {
     });
 
     let raf = 0;
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
     const animate = () => {
       raf = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      timer.update();
+      const t = timer.getElapsed();
       const p = progressRef.current;
 
       // The pass is front-loaded: the dragon is fully gone by p = 0.7 so it

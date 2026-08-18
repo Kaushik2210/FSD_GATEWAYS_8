@@ -1,7 +1,7 @@
-// In production the API is served from the same domain (Vercel serverless
-// function at /api), so a relative path just works. In dev, Vite serves
-// the frontend on its own port, so point at the local Express server.
-const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:4000/api" : "/api");
+// Next.js Route Handlers under src/app/api are always served from the same
+// origin as the page, in both dev and production, so a relative path works
+// everywhere — no separate backend port to point at.
+const BASE_URL = "/api";
 
 async function request(path, { headers, ...options } = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
